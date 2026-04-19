@@ -13,6 +13,8 @@ router.use(require("./flow/001/3-HP-THI-002"));
 router.use(require("./flow/001/5-HS-MCS-001"));
 router.use(require("./flow/001/6-HP-THI-001"));
 router.use(require("./flow/001/7-HP-THI-005"));
+router.use(require("./flow/001/8-HP-MIC-001"));
+router.use(require("./flow/001/9-HP-MIC-002"));
 
 router.use(require("./flow/001/reportlist"));
 

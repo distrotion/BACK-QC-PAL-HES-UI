@@ -13,7 +13,7 @@ let day = d;
 
 //----------------- SETUP
 
-let NAME_INS = 'HP-THI-002'
+let NAME_INS = 'HP-MIC-002'
 
 //----------------- DATABASE
 
@@ -36,7 +36,7 @@ let MAININP = "MAIN_INPROCESS";
 
 let finddbbuffer = [{}];
 
-let HPTHI002db = {
+let HPMIC002db = {
   "INS": NAME_INS,
   "PO": "",
   "CP": "",
@@ -97,21 +97,21 @@ let HPTHI002db = {
 
 
 
-router.get('/FINAL/CHECK-HPTHI002', async (req, res) => {
+router.get('/FINAL/CHECK-HPMIC002', async (req, res) => {
 
-  return res.json(HPTHI002db['PO']);
+  return res.json(HPMIC002db['PO']);
 });
 
 
-router.post('/FINAL/HPTHI002db', async (req, res) => {
+router.post('/FINAL/HPMIC002db', async (req, res) => {
   //-------------------------------------
-  // console.log('--HPTHI002db--');
+  // console.log('--HPMIC002db--');
   // console.log(req.body);
   //-------------------------------------
   let finddb = [{}];
   try {
 
-    finddb = HPTHI002db;
+    finddb = HPMIC002db;
     finddbbuffer = finddb;
   }
   catch (err) {
@@ -121,14 +121,14 @@ router.post('/FINAL/HPTHI002db', async (req, res) => {
   return res.json(finddb);
 });
 
-router.post('/FINAL/GETINtoHPTHI002', async (req, res) => {
+router.post('/FINAL/GETINtoHPMIC002', async (req, res) => {
   //-------------------------------------
-  console.log('--GETINtoHPTHI002--');
+  console.log('--GETINtoHPMIC002--');
   console.log(req.body);
   let input = req.body;
   //-------------------------------------
   let output = 'NOK';
-  check = HPTHI002db;
+  check = HPMIC002db;
   if (input['PO'] !== undefined && input['CP'] !== undefined && check['PO'] === '' && input['USER'] !== undefined && input['USERID'] !== undefined) {
     // let dbsap = await mssql.qurey(`select * FROM [SAPData_GW_GAS].[dbo].[tblSAPDetail] where [PO] = ${input['PO']}`);
 
@@ -264,7 +264,7 @@ router.post('/FINAL/GETINtoHPTHI002', async (req, res) => {
 
 
 
-        HPTHI002db = {
+        HPMIC002db = {
           "INS": NAME_INS,
           "PO": input['PO'] || '',
           "CP": input['CP'] || '',
@@ -350,18 +350,18 @@ router.post('/FINAL/GETINtoHPTHI002', async (req, res) => {
   return res.json(output);
 });
 
-router.post('/FINAL/HPTHI002-geteachITEM', async (req, res) => {
+router.post('/FINAL/HPMIC002-geteachITEM', async (req, res) => {
   //-------------------------------------
-  console.log('--HPTHI002-geteachITEM--');
+  console.log('--HPMIC002-geteachITEM--');
   console.log(req.body);
   let inputB = req.body;
 
   let ITEMSS = '';
   let output = 'NOK';
 
-  for (i = 0; i < HPTHI002db['ItemPickcode'].length; i++) {
-    if (HPTHI002db['ItemPickcode'][i]['value'] === inputB['ITEMs']) {
-      ITEMSS = HPTHI002db['ItemPickcode'][i]['key'];
+  for (i = 0; i < HPMIC002db['ItemPickcode'].length; i++) {
+    if (HPMIC002db['ItemPickcode'][i]['value'] === inputB['ITEMs']) {
+      ITEMSS = HPMIC002db['ItemPickcode'][i]['key'];
     }
   }
 
@@ -369,14 +369,14 @@ router.post('/FINAL/HPTHI002-geteachITEM', async (req, res) => {
   if (ITEMSS !== '') {
 
     //-------------------------------------
-    HPTHI002db['inspectionItem'] = ITEMSS;
-    HPTHI002db['inspectionItemNAME'] = inputB['ITEMs'];
-    let input = { 'PO': HPTHI002db["PO"], 'CP': HPTHI002db["CP"], 'ITEMs': HPTHI002db['inspectionItem'] };
+    HPMIC002db['inspectionItem'] = ITEMSS;
+    HPMIC002db['inspectionItemNAME'] = inputB['ITEMs'];
+    let input = { 'PO': HPMIC002db["PO"], 'CP': HPMIC002db["CP"], 'ITEMs': HPMIC002db['inspectionItem'] };
     //-------------------------------------
     if (input['PO'] !== undefined && input['CP'] !== undefined && input['ITEMs'] !== undefined) {
       let findcp = await mongodb.find(PATTERN, PATTERN_01, { "CP": input['CP'] });
       let UNITdata = await mongodb.find(master_FN, UNIT, {});
-      let masterITEMs = await mongodb.find(master_FN, ITEMs, { "masterID": HPTHI002db['inspectionItem'] });
+      let masterITEMs = await mongodb.find(master_FN, ITEMs, { "masterID": HPMIC002db['inspectionItem'] });
 
       for (i = 0; i < findcp[0]['FINAL'].length; i++) {
         if (findcp[0]['FINAL'][i]['ITEMs'] === input['ITEMs']) {
@@ -405,64 +405,64 @@ router.post('/FINAL/HPTHI002-geteachITEM', async (req, res) => {
 
           if (masterITEMs.length > 0) {
             //
-            HPTHI002db["RESULTFORMAT"] = masterITEMs[0]['RESULTFORMAT']
-            HPTHI002db["GRAPHTYPE"] = masterITEMs[0]['GRAPHTYPE']
+            HPMIC002db["RESULTFORMAT"] = masterITEMs[0]['RESULTFORMAT']
+            HPMIC002db["GRAPHTYPE"] = masterITEMs[0]['GRAPHTYPE']
             //------------------------------------
 
             let graph = await mongodb.find(PATTERN, GRAPH_TABLE, {});
-            HPTHI002db['GAPnameList'] = [];
+            HPMIC002db['GAPnameList'] = [];
             for (k = 0; k < graph.length; k++) {
-              HPTHI002db['GAPnameList'].push(graph[k]['NO']);
+              HPMIC002db['GAPnameList'].push(graph[k]['NO']);
             }
           }
 
           for (j = 0; j < UNITdata.length; j++) {
             if (findcp[0]['FINAL'][i]['UNIT'] == UNITdata[j]['masterID']) {
-              HPTHI002db["UNIT"] = UNITdata[j]['UNIT'];
+              HPMIC002db["UNIT"] = UNITdata[j]['UNIT'];
             }
           }
 
           console.log(findcp[0]['FINAL'][i]['POINT']);
 
-          HPTHI002db["POINTs"] = findcp[0]['FINAL'][i]['POINT'];
-          HPTHI002db["PCS"] = findcp[0]['FINAL'][i]['PCS'];
-          HPTHI002db["PCSleft"] = findcp[0]['FINAL'][i]['PCS'];
+          HPMIC002db["POINTs"] = findcp[0]['FINAL'][i]['POINT'];
+          HPMIC002db["PCS"] = findcp[0]['FINAL'][i]['PCS'];
+          HPMIC002db["PCSleft"] = findcp[0]['FINAL'][i]['PCS'];
 
-          HPTHI002db["SPEC"] = '';
+          HPMIC002db["SPEC"] = '';
           if (findcp[0]['FINAL'][i]['SPECIFICATIONve'] !== undefined) {
             if (findcp[0]['FINAL'][i]['SPECIFICATIONve']['condition'] === 'BTW') {
-              HPTHI002db["SPEC"] = `${findcp[0]['FINAL'][i]['SPECIFICATIONve']['BTW_LOW']}-${findcp[0]['FINAL'][i]['SPECIFICATIONve']['BTW_HI']}`;
+              HPMIC002db["SPEC"] = `${findcp[0]['FINAL'][i]['SPECIFICATIONve']['BTW_LOW']}-${findcp[0]['FINAL'][i]['SPECIFICATIONve']['BTW_HI']}`;
             } else if (findcp[0]['FINAL'][i]['SPECIFICATIONve']['condition'] === 'HIM(>)') {
-              HPTHI002db["SPEC"] = `>${findcp[0]['FINAL'][i]['SPECIFICATIONve']['HIM_L']}`;
+              HPMIC002db["SPEC"] = `>${findcp[0]['FINAL'][i]['SPECIFICATIONve']['HIM_L']}`;
             } else if (findcp[0]['FINAL'][i]['SPECIFICATIONve']['condition'] === 'LOL(<)') {
-              HPTHI002db["SPEC"] = `<${findcp[0]['FINAL'][i]['SPECIFICATIONve']['LOL_H']}`;
+              HPMIC002db["SPEC"] = `<${findcp[0]['FINAL'][i]['SPECIFICATIONve']['LOL_H']}`;
             } else if (findcp[0]['FINAL'][i]['SPECIFICATIONve']['condition'] === 'Actual') {
-              HPTHI002db["SPEC"] = 'Actual';
+              HPMIC002db["SPEC"] = 'Actual';
             }
           }
 
-          HPTHI002db["ANSCAL2"] = '';
+          HPMIC002db["ANSCAL2"] = '';
 
           let date = Date.now()
-          let REFLOT = await mongodb.find(PATTERN, "referdata", { "MATCP": HPTHI002db['MATCP'], "ITEMS": ITEMSS, "EXP": { $gt: date } });
+          let REFLOT = await mongodb.find(PATTERN, "referdata", { "MATCP": HPMIC002db['MATCP'], "ITEMS": ITEMSS, "EXP": { $gt: date } });
 
           console.log(REFLOT)
 
           if (REFLOT.length > 0) {
-            HPTHI002db["REFLOT"] = REFLOT[0]['TPKLOT'];
+            HPMIC002db["REFLOT"] = REFLOT[0]['TPKLOT'];
           }
 
-          HPTHI002db["FREQUENCY"] = findcp[0]['FINAL'][i]['FREQUENCY'];
+          HPMIC002db["FREQUENCY"] = findcp[0]['FINAL'][i]['FREQUENCY'];
 
 
 
-          HPTHI002db["INTERSEC"] = masterITEMs[0]['INTERSECTION'];
+          HPMIC002db["INTERSEC"] = masterITEMs[0]['INTERSECTION'];
           output = 'OK';
           let findpo = await mongodb.find(MAIN_DATA, MAIN, { "PO": input['PO'] });
           if (findpo.length > 0) {
             request.post(
-              'http://127.0.0.1:16175/FINAL/HPTHI002-feedback',
-              { json: { "PO": HPTHI002db['PO'], "ITEMs": HPTHI002db['inspectionItem'] } },
+              'http://127.0.0.1:16175/FINAL/HPMIC002-feedback',
+              { json: { "PO": HPMIC002db['PO'], "ITEMs": HPMIC002db['inspectionItem'] } },
               function (error, response, body2) {
                 if (!error && response.statusCode == 200) {
                   // console.log(body2);
@@ -479,33 +479,33 @@ router.post('/FINAL/HPTHI002-geteachITEM', async (req, res) => {
     }
 
   } else {
-    HPTHI002db["POINTs"] = '';
-    HPTHI002db["PCS"] = '';
-    HPTHI002db["SPEC"] = '';
-    HPTHI002db["PCSleft"] = '';
-    HPTHI002db["UNIT"] = "";
-    HPTHI002db["INTERSEC"] = "";
+    HPMIC002db["POINTs"] = '';
+    HPMIC002db["PCS"] = '';
+    HPMIC002db["SPEC"] = '';
+    HPMIC002db["PCSleft"] = '';
+    HPMIC002db["UNIT"] = "";
+    HPMIC002db["INTERSEC"] = "";
     output = 'NOK';
 
-    HPTHI002db["FREQUENCY"] = '';
-    HPTHI002db["REFLOT"] = '';
+    HPMIC002db["FREQUENCY"] = '';
+    HPMIC002db["REFLOT"] = '';
   }
 
   //-------------------------------------
   return res.json(output);
 });
 
-router.post('/FINAL/HPTHI002-geteachGRAPH', async (req, res) => {
+router.post('/FINAL/HPMIC002-geteachGRAPH', async (req, res) => {
   //-------------------------------------
-  console.log('--HPTHI002-geteachGRAPH--');
+  console.log('--HPMIC002-geteachGRAPH--');
   console.log(req.body);
   let input = req.body;
   //-------------------------------------
   try {
     let graph = await mongodb.find(PATTERN, GRAPH_TABLE, { "NO": input['GAPname'] });
     console.log(graph);
-    HPTHI002db['GAPnameListdata'] = graph[0];//confirmdata
-    HPTHI002db['GAP'] = HPTHI002db['GAPnameListdata'][`GT${HPTHI002db['confirmdata'].length + 1}`]
+    HPMIC002db['GAPnameListdata'] = graph[0];//confirmdata
+    HPMIC002db['GAP'] = HPMIC002db['GAPnameListdata'][`GT${HPMIC002db['confirmdata'].length + 1}`]
   }
   catch (err) {
 
@@ -514,9 +514,9 @@ router.post('/FINAL/HPTHI002-geteachGRAPH', async (req, res) => {
   return res.json('ok');
 });
 
-router.post('/FINAL/HPTHI002-preview', async (req, res) => {
+router.post('/FINAL/HPMIC002-preview', async (req, res) => {
   //-------------------------------------
-  console.log('--HPTHI002-preview--');
+  console.log('--HPMIC002-preview--');
   console.log(req.body);
   let input = req.body;
   //-------------------------------------
@@ -525,7 +525,7 @@ router.post('/FINAL/HPTHI002-preview', async (req, res) => {
     if (input[0]['V1'] !== undefined) {
       //-------------------------------------
       try {
-        HPTHI002db['preview'] = input;
+        HPMIC002db['preview'] = input;
         output = 'OK';
       }
       catch (err) {
@@ -536,65 +536,65 @@ router.post('/FINAL/HPTHI002-preview', async (req, res) => {
       output = 'NOK';
     }
   } else {
-    HPTHI002db['preview'] = [];
+    HPMIC002db['preview'] = [];
     output = 'clear';
   }
   //-------------------------------------
   return res.json(output);
 });
 
-router.post('/FINAL/HPTHI002-confirmdata', async (req, res) => {
+router.post('/FINAL/HPMIC002-confirmdata', async (req, res) => {
   //-------------------------------------
-  console.log('--HPTHI002-confirmdata--');
+  console.log('--HPMIC002-confirmdata--');
   console.log(req.body);
   // let input = req.body;
   //-------------------------------------
   let output = 'NOK';
   //-------------------------------------
   try {
-    let datapush = HPTHI002db['preview'][0]
+    let datapush = HPMIC002db['preview'][0]
 
-    if (HPTHI002db['RESULTFORMAT'] === 'Graph') {
-      let pushdata = HPTHI002db['preview'][0]
+    if (HPMIC002db['RESULTFORMAT'] === 'Graph') {
+      let pushdata = HPMIC002db['preview'][0]
 
-      pushdata['V5'] = HPTHI002db['GAP'];
-      pushdata['V1'] = `${HPTHI002db['confirmdata'].length + 1}:${pushdata['V1']}`;
+      pushdata['V5'] = HPMIC002db['GAP'];
+      pushdata['V1'] = `${HPMIC002db['confirmdata'].length + 1}:${pushdata['V1']}`;
 
-      if (HPTHI002db['GAP'] != '') {
+      if (HPMIC002db['GAP'] != '') {
 
-        HPTHI002db['confirmdata'].push(pushdata);
-        HPTHI002db['preview'] = [];
+        HPMIC002db['confirmdata'].push(pushdata);
+        HPMIC002db['preview'] = [];
         output = 'OK';
-        HPTHI002db['GAP'] = HPTHI002db['GAPnameListdata'][`GT${HPTHI002db['confirmdata'].length + 1}`]
+        HPMIC002db['GAP'] = HPMIC002db['GAPnameListdata'][`GT${HPMIC002db['confirmdata'].length + 1}`]
       } else {
         output = 'NOK';
       }
 
 
-    } else if (HPTHI002db['RESULTFORMAT'] === 'Number') {
+    } else if (HPMIC002db['RESULTFORMAT'] === 'Number') {
 
-      let pushdata = HPTHI002db['preview'][0]
+      let pushdata = HPMIC002db['preview'][0]
 
-      pushdata['V5'] = HPTHI002db['confirmdata'].length + 1
-      pushdata['V1'] = `${HPTHI002db['confirmdata'].length + 1}:${pushdata['V1']}`
+      pushdata['V5'] = HPMIC002db['confirmdata'].length + 1
+      pushdata['V1'] = `${HPMIC002db['confirmdata'].length + 1}:${pushdata['V1']}`
 
-      HPTHI002db['confirmdata'].push(pushdata);
-      HPTHI002db['preview'] = [];
+      HPMIC002db['confirmdata'].push(pushdata);
+      HPMIC002db['preview'] = [];
       output = 'OK';
-    } else if (HPTHI002db['RESULTFORMAT'] === 'CAL2') {
+    } else if (HPMIC002db['RESULTFORMAT'] === 'CAL2') {
 
-      let pushdata = HPTHI002db['preview'][0]
+      let pushdata = HPMIC002db['preview'][0]
 
-      pushdata['V5'] = HPTHI002db['confirmdata'].length + 1
-      pushdata['V1'] = `${HPTHI002db['confirmdata'].length + 1}:${pushdata['V1']}`
+      pushdata['V5'] = HPMIC002db['confirmdata'].length + 1
+      pushdata['V1'] = `${HPMIC002db['confirmdata'].length + 1}:${pushdata['V1']}`
 
 
      
       
 
 
-      HPTHI002db['confirmdata'].push(pushdata);
-      HPTHI002db['preview'] = [];
+      HPMIC002db['confirmdata'].push(pushdata);
+      HPMIC002db['preview'] = [];
       output = 'OK';
     }
   }
@@ -607,9 +607,9 @@ router.post('/FINAL/HPTHI002-confirmdata', async (req, res) => {
 
 
 
-router.post('/FINAL/HPTHI002-feedback', async (req, res) => {
+router.post('/FINAL/HPMIC002-feedback', async (req, res) => {
   //-------------------------------------
-  console.log('--HPTHI002-feedback--');
+  console.log('--HPMIC002-feedback--');
   console.log(req.body);
   let input = req.body;
   //-------------------------------------
@@ -631,8 +631,8 @@ router.post('/FINAL/HPTHI002-feedback', async (req, res) => {
       for (i = 0; i < oblist.length; i++) {
         LISTbuffer.push(...ob[oblist[i]])
       }
-      HPTHI002db["PCSleft"] = `${parseInt(HPTHI002db["PCS"]) - oblist.length}`;
-      if (HPTHI002db['RESULTFORMAT'] === 'Number' || HPTHI002db['RESULTFORMAT'] === 'Text' || HPTHI002db['RESULTFORMAT'] === 'Graph') {
+      HPMIC002db["PCSleft"] = `${parseInt(HPMIC002db["PCS"]) - oblist.length}`;
+      if (HPMIC002db['RESULTFORMAT'] === 'Number' || HPMIC002db['RESULTFORMAT'] === 'Text' || HPMIC002db['RESULTFORMAT'] === 'Graph') {
         for (i = 0; i < LISTbuffer.length; i++) {
           if (LISTbuffer[i]['PO1'] === 'Mean') {
             ITEMleftVALUEout.push({ "V1": 'Mean', "V2": `${LISTbuffer[i]['PO3']}` })
@@ -644,28 +644,28 @@ router.post('/FINAL/HPTHI002-feedback', async (req, res) => {
 
 
 
-        HPTHI002db["ITEMleftUNIT"] = [{ "V1": "FINAL", "V2": `${oblist.length}` }];
-        HPTHI002db["ITEMleftVALUE"] = ITEMleftVALUEout;
+        HPMIC002db["ITEMleftUNIT"] = [{ "V1": "FINAL", "V2": `${oblist.length}` }];
+        HPMIC002db["ITEMleftVALUE"] = ITEMleftVALUEout;
 
       } else {
 
       }
       // output = 'OK';
-      if ((parseInt(HPTHI002db["PCS"]) - oblist.length) == 0) {
+      if ((parseInt(HPMIC002db["PCS"]) - oblist.length) == 0) {
         //CHECKlist
         for (i = 0; i < feedback[0]['CHECKlist'].length; i++) {
           if (input["ITEMs"] === feedback[0]['CHECKlist'][i]['key']) {
             feedback[0]['CHECKlist'][i]['FINISH'] = 'OK';
             feedback[0]['CHECKlist'][i]['timestamp'] = `${Date.now()}`;
             // console.log(feedback[0]['CHECKlist']);
-            if (HPTHI002db['FREQUENCY'] === 'time/D'|| HPTHI002db['FREQUENCY'] === 'time/6M'||HPTHI002db['FREQUENCY'] === 'pcs/M'||HPTHI002db['FREQUENCY'] === 'time/Year'||HPTHI002db['FREQUENCY'] === 'pcs/Y') {
+            if (HPMIC002db['FREQUENCY'] === 'time/D'|| HPMIC002db['FREQUENCY'] === 'time/6M'||HPMIC002db['FREQUENCY'] === 'pcs/M'||HPMIC002db['FREQUENCY'] === 'time/Year'||HPMIC002db['FREQUENCY'] === 'pcs/Y') {
               let resp = await axios.post('http://127.0.0.1:16175/FINAL/REFLOTSET', {
-                "PO": HPTHI002db['PO'],
-                "MATCP": HPTHI002db['CP'],
-                "FREQUENCY": HPTHI002db['FREQUENCY'],
-                "ITEMs": HPTHI002db['inspectionItem'],
-                "TPKLOT": HPTHI002db['TPKLOT'],
-                "INS": HPTHI002db['INS']
+                "PO": HPMIC002db['PO'],
+                "MATCP": HPMIC002db['CP'],
+                "FREQUENCY": HPMIC002db['FREQUENCY'],
+                "ITEMs": HPMIC002db['inspectionItem'],
+                "TPKLOT": HPMIC002db['TPKLOT'],
+                "INS": HPMIC002db['INS']
               });
             }
             let feedbackupdate = await mongodb.update(MAIN_DATA, MAIN, { "PO": input['PO'] }, { "$set": { 'CHECKlist': feedback[0]['CHECKlist'] } });
@@ -708,7 +708,7 @@ router.post('/FINAL/HPTHI002-feedback', async (req, res) => {
 
           } else if (masterITEMs[0]['RESULTFORMAT'] === 'Graph') {
 
-            if (HPTHI002db['GRAPHTYPE'] == 'CDE') {
+            if (HPMIC002db['GRAPHTYPE'] == 'CDE') {
 
               //
               let axis_data = [];
@@ -720,8 +720,8 @@ router.post('/FINAL/HPTHI002-feedback', async (req, res) => {
               //-----------------core
 
               let core = 0;
-              if (HPTHI002db['INTERSEC'] !== '') {
-                core = parseFloat(HPTHI002db['INTERSEC'])
+              if (HPMIC002db['INTERSEC'] !== '') {
+                core = parseFloat(HPMIC002db['INTERSEC'])
               } else {
                 core = parseFloat(axis_data[axis_data.length - 1]['y'])
               }
@@ -749,11 +749,11 @@ router.post('/FINAL/HPTHI002-feedback', async (req, res) => {
                 let feedbackupdateRESULTFORMAT = await mongodb.update(MAIN_DATA, MAIN, { "PO": input['PO'] }, { "$set": { 'FINAL_ANS': feedback[0]['FINAL_ANS'] } });
               }
               catch (err) {
-                HPTHI002db[`INTERSEC_ERR`] = 1;
+                HPMIC002db[`INTERSEC_ERR`] = 1;
               }
 
               //
-            } else if (HPTHI002db['GRAPHTYPE'] == 'CDT') {
+            } else if (HPMIC002db['GRAPHTYPE'] == 'CDT') {
 
               //
               let axis_data = [];
@@ -765,8 +765,8 @@ router.post('/FINAL/HPTHI002-feedback', async (req, res) => {
               //-----------------core
 
               let core = 0;
-              if (HPTHI002db['INTERSEC'] !== '') {
-                core = parseFloat(HPTHI002db['INTERSEC'])
+              if (HPMIC002db['INTERSEC'] !== '') {
+                core = parseFloat(HPMIC002db['INTERSEC'])
               } else {
                 // core = parseFloat(axis_data[axis_data.length - 1]['y']) 
                 core = parseFloat(axis_data[axis_data.length - 1]['y']) + 50
@@ -795,11 +795,11 @@ router.post('/FINAL/HPTHI002-feedback', async (req, res) => {
                 let feedbackupdateRESULTFORMAT = await mongodb.update(MAIN_DATA, MAIN, { "PO": input['PO'] }, { "$set": { 'FINAL_ANS': feedback[0]['FINAL_ANS'] } });
               }
               catch (err) {
-                HPTHI002db[`INTERSEC_ERR`] = 1;
+                HPMIC002db[`INTERSEC_ERR`] = 1;
               }
 
               //
-            } else if (HPTHI002db['GRAPHTYPE'] == 'CDT(S)') {
+            } else if (HPMIC002db['GRAPHTYPE'] == 'CDT(S)') {
 
               //
               let axis_data = [];
@@ -811,8 +811,8 @@ router.post('/FINAL/HPTHI002-feedback', async (req, res) => {
               //-----------------core
 
               let core = 0;
-              if (HPTHI002db['INTERSEC'] !== '') {
-                core = parseFloat(HPTHI002db['INTERSEC'])
+              if (HPMIC002db['INTERSEC'] !== '') {
+                core = parseFloat(HPMIC002db['INTERSEC'])
               } else {
                 core = parseFloat(axis_data[axis_data.length - 1]['y']) + 50
               }
@@ -840,7 +840,7 @@ router.post('/FINAL/HPTHI002-feedback', async (req, res) => {
                 let feedbackupdateRESULTFORMAT = await mongodb.update(MAIN_DATA, MAIN, { "PO": input['PO'] }, { "$set": { 'FINAL_ANS': feedback[0]['FINAL_ANS'] } });
               }
               catch (err) {
-                HPTHI002db[`INTERSEC_ERR`] = 1;
+                HPMIC002db[`INTERSEC_ERR`] = 1;
               }
 
               //
@@ -907,7 +907,7 @@ router.post('/FINAL/HPTHI002-feedback', async (req, res) => {
 
               }
               catch (err) {
-                HPTHI002db[`INTERSEC_ERR`] = 1;
+                HPMIC002db[`INTERSEC_ERR`] = 1;
               }
             }
 
@@ -940,8 +940,8 @@ router.post('/FINAL/HPTHI002-feedback', async (req, res) => {
 
       }
     } else {
-      HPTHI002db["ITEMleftUNIT"] = '';
-      HPTHI002db["ITEMleftVALUE"] = '';
+      HPMIC002db["ITEMleftUNIT"] = '';
+      HPMIC002db["ITEMleftVALUE"] = '';
     }
 
   }
@@ -950,9 +950,9 @@ router.post('/FINAL/HPTHI002-feedback', async (req, res) => {
   return res.json(output);
 });
 
-router.post('/FINAL/HPTHI002-SETZERO', async (req, res) => {
+router.post('/FINAL/HPMIC002-SETZERO', async (req, res) => {
   //-------------------------------------
-  console.log('--HPTHI002fromINS--');
+  console.log('--HPMIC002fromINS--');
   console.log(req.body);
   let input = req.body;
   //-------------------------------------
@@ -960,7 +960,7 @@ router.post('/FINAL/HPTHI002-SETZERO', async (req, res) => {
   //-------------------------------------
   try {
 
-    HPTHI002db = {
+    HPMIC002db = {
       "INS": NAME_INS,
       "PO": "",
       "CP": "",
@@ -1025,9 +1025,9 @@ router.post('/FINAL/HPTHI002-SETZERO', async (req, res) => {
   return res.json(output);
 });
 
-router.post('/FINAL/HPTHI002-CLEAR', async (req, res) => {
+router.post('/FINAL/HPMIC002-CLEAR', async (req, res) => {
   //-------------------------------------
-  console.log('--HPTHI002fromINS--');
+  console.log('--HPMIC002fromINS--');
   console.log(req.body);
   let input = req.body;
   //-------------------------------------
@@ -1035,8 +1035,8 @@ router.post('/FINAL/HPTHI002-CLEAR', async (req, res) => {
   //-------------------------------------
   try {
 
-    HPTHI002db['preview'] = [];
-    HPTHI002db['confirmdata'] = [];
+    HPMIC002db['preview'] = [];
+    HPMIC002db['confirmdata'] = [];
 
     output = 'OK';
   }
@@ -1047,9 +1047,9 @@ router.post('/FINAL/HPTHI002-CLEAR', async (req, res) => {
   return res.json(output);
 });
 
-router.post('/FINAL/HPTHI002-RESETVALUE', async (req, res) => {
+router.post('/FINAL/HPMIC002-RESETVALUE', async (req, res) => {
   //-------------------------------------
-  console.log('--HPTHI002fromINS--');
+  console.log('--HPMIC002fromINS--');
   console.log(req.body);
   let input = req.body;
   //-------------------------------------
@@ -1057,9 +1057,9 @@ router.post('/FINAL/HPTHI002-RESETVALUE', async (req, res) => {
   //-------------------------------------
   try {
 
-    let all = HPTHI002db['confirmdata'].length
+    let all = HPMIC002db['confirmdata'].length
     if (all > 0) {
-      HPTHI002db['confirmdata'].pop();
+      HPMIC002db['confirmdata'].pop();
     }
 
     output = 'OK';
@@ -1074,24 +1074,24 @@ router.post('/FINAL/HPTHI002-RESETVALUE', async (req, res) => {
 //"value":[],  //key: PO1: itemname ,PO2:V01,PO3: V02,PO4: V03,PO5:V04,P06:INS,P9:NO.,P10:TYPE, last alway mean P01:"MEAN",PO2:V01,PO3:V02-MEAN,PO4: V03,PO5:V04-MEAN
 
 
-router.post('/FINAL/HPTHI002-FINISH', async (req, res) => {
+router.post('/FINAL/HPMIC002-FINISH', async (req, res) => {
   //-------------------------------------
-  console.log('--HPTHI002-FINISH--');
+  console.log('--HPMIC002-FINISH--');
   console.log(req.body);
   let input = req.body;
   //-------------------------------------
   let output = 'OK';
 
-  if (HPTHI002db['RESULTFORMAT'] === 'Number' || HPTHI002db['RESULTFORMAT'] === 'Text') {
+  if (HPMIC002db['RESULTFORMAT'] === 'Number' || HPMIC002db['RESULTFORMAT'] === 'Text') {
 
-    HPTHI002db["value"] = [];
-    for (i = 0; i < HPTHI002db['confirmdata'].length; i++) {
-      HPTHI002db["value"].push({
-        "PO1": HPTHI002db["inspectionItemNAME"],
-        "PO2": HPTHI002db['confirmdata'][i]['V1'],
-        "PO3": HPTHI002db['confirmdata'][i]['V2'],
-        "PO4": HPTHI002db['confirmdata'][i]['V3'],
-        "PO5": HPTHI002db['confirmdata'][i]['V4'],
+    HPMIC002db["value"] = [];
+    for (i = 0; i < HPMIC002db['confirmdata'].length; i++) {
+      HPMIC002db["value"].push({
+        "PO1": HPMIC002db["inspectionItemNAME"],
+        "PO2": HPMIC002db['confirmdata'][i]['V1'],
+        "PO3": HPMIC002db['confirmdata'][i]['V2'],
+        "PO4": HPMIC002db['confirmdata'][i]['V3'],
+        "PO5": HPMIC002db['confirmdata'][i]['V4'],
         "PO6": "-",
         "PO7": "-",
         "PO8": '-',
@@ -1099,85 +1099,85 @@ router.post('/FINAL/HPTHI002-FINISH', async (req, res) => {
         "PO10": "AUTO",
       });
     }
-    if (HPTHI002db["value"].length > 0) {
+    if (HPMIC002db["value"].length > 0) {
       let mean01 = [];
       let mean02 = [];
-      for (i = 0; i < HPTHI002db["value"].length; i++) {
-        mean01.push(parseFloat(HPTHI002db["value"][i]["PO3"]));
-        mean02.push(parseFloat(HPTHI002db["value"][i]["PO5"]));
+      for (i = 0; i < HPMIC002db["value"].length; i++) {
+        mean01.push(parseFloat(HPMIC002db["value"][i]["PO3"]));
+        mean02.push(parseFloat(HPMIC002db["value"][i]["PO5"]));
       }
       let sum1 = mean01.reduce((a, b) => a + b, 0);
       let avg1 = (sum1 / mean01.length) || 0;
       let sum2 = mean02.reduce((a, b) => a + b, 0);
       let avg2 = (sum2 / mean02.length) || 0;
-      HPTHI002db["value"].push({
+      HPMIC002db["value"].push({
         "PO1": 'Mean',
-        "PO2": HPTHI002db['confirmdata'][0]['V1'],
+        "PO2": HPMIC002db['confirmdata'][0]['V1'],
         "PO3": avg1,
-        "PO4": HPTHI002db['confirmdata'][0]['V3'],
+        "PO4": HPMIC002db['confirmdata'][0]['V3'],
         "PO5": avg2,
       });
     }
 
-  } else if (HPTHI002db['RESULTFORMAT'] === 'OCR' || HPTHI002db['RESULTFORMAT'] === 'Picture') {
+  } else if (HPMIC002db['RESULTFORMAT'] === 'OCR' || HPMIC002db['RESULTFORMAT'] === 'Picture') {
 
-  } else if (HPTHI002db['RESULTFORMAT'] === 'Graph') {
+  } else if (HPMIC002db['RESULTFORMAT'] === 'Graph') {
 
-    HPTHI002db["value"] = [];
-    for (i = 0; i < HPTHI002db['confirmdata'].length; i++) {
-      HPTHI002db["value"].push({
-        "PO1": HPTHI002db["inspectionItemNAME"],
-        "PO2": HPTHI002db['confirmdata'][i]['V1'],
-        "PO3": HPTHI002db['confirmdata'][i]['V2'],
-        "PO4": HPTHI002db['confirmdata'][i]['V3'],
-        "PO5": HPTHI002db['confirmdata'][i]['V4'],
+    HPMIC002db["value"] = [];
+    for (i = 0; i < HPMIC002db['confirmdata'].length; i++) {
+      HPMIC002db["value"].push({
+        "PO1": HPMIC002db["inspectionItemNAME"],
+        "PO2": HPMIC002db['confirmdata'][i]['V1'],
+        "PO3": HPMIC002db['confirmdata'][i]['V2'],
+        "PO4": HPMIC002db['confirmdata'][i]['V3'],
+        "PO5": HPMIC002db['confirmdata'][i]['V4'],
         "PO6": "-",
         "PO7": "-",
-        "PO8": HPTHI002db['confirmdata'][i]['V5'],
+        "PO8": HPMIC002db['confirmdata'][i]['V5'],
         "PO9": i + 1,
         "PO10": "AUTO",
       });
     }
-    if (HPTHI002db["value"].length > 0) {
+    if (HPMIC002db["value"].length > 0) {
       let mean01 = [];
       let mean02 = [];
-      for (i = 0; i < HPTHI002db["value"].length; i++) {
-        mean01.push(parseFloat(HPTHI002db["value"][i]["PO3"]));
-        mean02.push(parseFloat(HPTHI002db["value"][i]["PO5"]));
+      for (i = 0; i < HPMIC002db["value"].length; i++) {
+        mean01.push(parseFloat(HPMIC002db["value"][i]["PO3"]));
+        mean02.push(parseFloat(HPMIC002db["value"][i]["PO5"]));
       }
       let sum1 = mean01.reduce((a, b) => a + b, 0);
       let avg1 = (sum1 / mean01.length) || 0;
       let sum2 = mean02.reduce((a, b) => a + b, 0);
       let avg2 = (sum2 / mean02.length) || 0;
-      HPTHI002db["value"].push({
+      HPMIC002db["value"].push({
         "PO1": 'Mean',
-        "PO2": HPTHI002db['confirmdata'][0]['V1'],
+        "PO2": HPMIC002db['confirmdata'][0]['V1'],
         "PO3": avg1,
-        "PO4": HPTHI002db['confirmdata'][0]['V3'],
+        "PO4": HPMIC002db['confirmdata'][0]['V3'],
         "PO5": avg2,
       });
     }
 
   }
 
-  if (HPTHI002db['RESULTFORMAT'] === 'Number' ||
-    HPTHI002db['RESULTFORMAT'] === 'Text' ||
-    HPTHI002db['RESULTFORMAT'] === 'OCR' ||
-    HPTHI002db['RESULTFORMAT'] === 'Picture' || HPTHI002db['RESULTFORMAT'] === 'Graph') {
+  if (HPMIC002db['RESULTFORMAT'] === 'Number' ||
+    HPMIC002db['RESULTFORMAT'] === 'Text' ||
+    HPMIC002db['RESULTFORMAT'] === 'OCR' ||
+    HPMIC002db['RESULTFORMAT'] === 'Picture' || HPMIC002db['RESULTFORMAT'] === 'Graph') {
     request.post(
       'http://127.0.0.1:16175/FINAL/FINISHtoDB',
-      { json: HPTHI002db },
+      { json: HPMIC002db },
       function (error, response, body) {
         if (!error && response.statusCode == 200) {
           // console.log(body);
           // if (body === 'OK') {
-          HPTHI002db['confirmdata'] = [];
-          HPTHI002db["value"] = [];
+          HPMIC002db['confirmdata'] = [];
+          HPMIC002db["value"] = [];
           //------------------------------------------------------------------------------------
 
           request.post(
-            'http://127.0.0.1:16175/FINAL/HPTHI002-feedback',
-            { json: { "PO": HPTHI002db['PO'], "ITEMs": HPTHI002db['inspectionItem'] } },
+            'http://127.0.0.1:16175/FINAL/HPMIC002-feedback',
+            { json: { "PO": HPMIC002db['PO'], "ITEMs": HPMIC002db['inspectionItem'] } },
             function (error, response, body2) {
               if (!error && response.statusCode == 200) {
                 // console.log(body2);
@@ -1196,32 +1196,32 @@ router.post('/FINAL/HPTHI002-FINISH', async (req, res) => {
     );
   }
   //-------------------------------------
-  return res.json(HPTHI002db);
+  return res.json(HPMIC002db);
 });
 
-router.post('/FINAL/HPTHI002-REFLOT', async (req, res) => {
+router.post('/FINAL/HPMIC002-REFLOT', async (req, res) => {
   //-------------------------------------
-  console.log('--HPTHI002-REFLOT--');
+  console.log('--HPMIC002-REFLOT--');
   console.log(req.body);
   let input = req.body;
   //-------------------------------------
   let output = 'NOK';
   //-------------------------------------
   //FINAL/REFLOT
-  if (HPTHI002db['REFLOT'] != '') {
+  if (HPMIC002db['REFLOT'] != '') {
     request.post(
       'http://127.0.0.1:16175/FINAL/REFLOT',
-      { json: HPTHI002db },
+      { json: HPMIC002db },
       function (error, response, body) {
         if (!error && response.statusCode == 200) {
           // console.log(body);
           // if (body === 'OK') {
-          // HPTHI002db['confirmdata'] = [];
-          // HPTHI002db["value"] = [];
+          // HPMIC002db['confirmdata'] = [];
+          // HPMIC002db["value"] = [];
           //------------------------------------------------------------------------------------
           request.post(
-            'http://127.0.0.1:16175/FINAL/HPTHI002-feedback',
-            { json: { "PO": HPTHI002db['PO'], "ITEMs": HPTHI002db['inspectionItem'] } },
+            'http://127.0.0.1:16175/FINAL/HPMIC002-feedback',
+            { json: { "PO": HPMIC002db['PO'], "ITEMs": HPMIC002db['inspectionItem'] } },
             function (error, response, body2) {
               if (!error && response.statusCode == 200) {
                 // console.log(body2);
