@@ -108,6 +108,7 @@ router.post('/FINAL/HSMCS001db', async (req, res) => {
     finddb = finddbbuffer;
   }
   //-------------------------------------
+  // console.log(finddb);
   return res.json(finddb);
 });
 
@@ -122,12 +123,12 @@ router.post('/FINAL/GETINtoHSMCS001', async (req, res) => {
   if (input['PO'] !== undefined && input['CP'] !== undefined && check['PO'] === '' && input['USER'] !== undefined && input['USERID'] !== undefined) {
     // let dbsap = await mssql.qurey(`select * FROM [SAPData_GW_GAS].[dbo].[tblSAPDetail] where [PO] = ${input['PO']}`);
 
-    let findPO = await mongodb.findSAP('mongodb://172.23.10.139:12020', "ORDER", "ORDER", {});
+    let findPO = await mongodb.findSAP('mongodb://172.23.10.139:12022', "ORDER", "ORDER", {});
 
     let cuslot = '';
 
     //&& findPO[0][`DATA`].length > 0
-    if (findPO[0][`DATA`] != undefined ) {
+    if (findPO[0][`DATA`] != undefined) {
       let dbsap = ''
       for (i = 0; i < findPO[0][`DATA`].length; i++) {
         if (findPO[0][`DATA`][i][`PO`] === input['PO']) {
@@ -279,12 +280,14 @@ router.post('/FINAL/GETINtoHSMCS001', async (req, res) => {
           "QUANTITY": dbsap['QUANTITY'] || '',
           // "PROCESS":dbsap ['PROCESS'] || '',
           // "CUSLOTNO": dbsap['CUSLOTNO'] || '',
-          "CUSLOTNO":  cuslot,
+          //CUST_FULLNM
+          //findcp[0]['CUST_FULLNM'] || '',
+          "CUSLOTNO": cuslot,
           "FG_CHARG": dbsap['FG_CHARG'] || '',
           "PARTNAME_PO": dbsap['PARTNAME_PO'] || '',
           "PART_PO": dbsap['PART_PO'] || '',
-          "CUSTNAME_s": dbsap['CUSTNAME'] || '',
-          "CUSTNAME": dbsap['CUST_FULLNM']|| '',
+          "CUSTNAME_s": dbsap['CUST_FULLNM'] || '',
+          "CUSTNAME": findcp[0]['CUST_FULLNM'] || '',
           "UNITSAP": dbsap['UNIT'] || '',
           //----------------------
           "ItemPick": ItemPickoutP2, //---->
@@ -352,6 +355,8 @@ router.post('/FINAL/HSMCS001-geteachITEM', async (req, res) => {
     }
   }
 
+  
+
 
   if (ITEMSS !== '') {
 
@@ -359,8 +364,10 @@ router.post('/FINAL/HSMCS001-geteachITEM', async (req, res) => {
     HSMCS001db['inspectionItem'] = ITEMSS;
     HSMCS001db['inspectionItemNAME'] = inputB['ITEMs'];
     let input = { 'PO': HSMCS001db["PO"], 'CP': HSMCS001db["CP"], 'ITEMs': HSMCS001db['inspectionItem'] };
+    console.log(input);
     //-------------------------------------
     if (input['PO'] !== undefined && input['CP'] !== undefined && input['ITEMs'] !== undefined) {
+
       let findcp = await mongodb.find(PATTERN, PATTERN_01, { "CP": input['CP'] });
       let UNITdata = await mongodb.find(master_FN, UNIT, {});
       let masterITEMs = await mongodb.find(master_FN, ITEMs, { "masterID": HSMCS001db['inspectionItem'] });
@@ -414,8 +421,8 @@ router.post('/FINAL/HSMCS001-geteachITEM', async (req, res) => {
             }
           }
 
-          let date =  Date.now()
-          let REFLOT = await mongodb.find(PATTERN, "referdata", { "MATCP": HSMCS001db['MATCP'], "ITEMS": ITEMSS,"EXP":{$gt:date} });
+          let date = Date.now()
+          let REFLOT = await mongodb.find(PATTERN, "referdata", { "MATCP": HSMCS001db['MATCP'], "ITEMS": ITEMSS, "EXP": { $gt: date } });
 
           console.log(REFLOT)
 
@@ -539,13 +546,14 @@ router.post('/FINAL/HSMCS001-feedback', async (req, res) => {
   let output = 'NOK';
 
   //-------------------------------------
+
   if (input["PO"] !== undefined && input["ITEMs"] !== undefined) {
     let feedback = await mongodb.find(MAIN_DATA, MAIN, { "PO": input['PO'] });
     if (feedback.length > 0 && feedback[0]['FINAL'] != undefined && feedback[0]['FINAL'][NAME_INS] != undefined && feedback[0]['FINAL'][NAME_INS][input["ITEMs"]] != undefined) {
       // console.log(Object.keys(feedback[0]['FINAL'][NAME_INS][input["ITEMs"]]));
       let oblist = Object.keys(feedback[0]['FINAL'][NAME_INS][input["ITEMs"]]);
       let ob = feedback[0]['FINAL'][NAME_INS][input["ITEMs"]];
-
+      console.log("-----------++++++++++++++");
 
       let LISTbuffer = [];
       let ITEMleftVALUEout = [];
@@ -584,7 +592,7 @@ router.post('/FINAL/HSMCS001-feedback', async (req, res) => {
             feedback[0]['CHECKlist'][i]['FINISH'] = 'OK';
             feedback[0]['CHECKlist'][i]['timestamp'] = `${Date.now()}`;
             // console.log(feedback[0]['CHECKlist']);
-            if (HSMCS001db['FREQUENCY'] === 'time/D'|| HSMCS001db['FREQUENCY'] === 'time/6M'||HSMCS001db['FREQUENCY'] === 'pcs/M'||HSMCS001db['FREQUENCY'] === 'time/Year'||HSMCS001db['FREQUENCY'] === 'pcs/Y') {
+            if (HSMCS001db['FREQUENCY'] === 'time/D' || HSMCS001db['FREQUENCY'] === 'time/6M' || HSMCS001db['FREQUENCY'] === 'pcs/M' || HSMCS001db['FREQUENCY'] === 'time/Year' || HSMCS001db['FREQUENCY'] === 'pcs/Y') {
               let resp = await axios.post('http://127.0.0.1:16175/FINAL/REFLOTSET', {
                 "PO": HSMCS001db['PO'],
                 "MATCP": HSMCS001db['CP'],
@@ -639,8 +647,11 @@ router.post('/FINAL/HSMCS001-feedback', async (req, res) => {
           } else if (masterITEMs[0]['RESULTFORMAT'] === 'Graph') {
 
           } else if (masterITEMs[0]['RESULTFORMAT'] === 'Picture') {
-            feedback[0]['FINAL_ANS'][input["ITEMs"]] = 'Good';
-            let feedbackupdateRESULTFORMAT = await mongodb.update(MAIN_DATA, MAIN, { "PO": input['PO'] }, { "$set": { 'FINAL_ANS': feedback[0]['FINAL_ANS'] } });
+            if (feedback[0]['FINAL_ANS'] != undefined) {
+              feedback[0]['FINAL_ANS'][input["ITEMs"]] = 'Good';
+              let feedbackupdateRESULTFORMAT = await mongodb.update(MAIN_DATA, MAIN, { "PO": input['PO'] }, { "$set": { 'FINAL_ANS': feedback[0]['FINAL_ANS'] } });
+            }
+
 
           } else if (masterITEMs[0]['RESULTFORMAT'] === 'OCR') {
             feedback[0]['FINAL_ANS'][input["ITEMs"]] = LISTbuffer[0]['PIC1data'];
@@ -1185,6 +1196,90 @@ router.post('/FINAL/HSMCS001-REFLOT', async (req, res) => {
   }
   //-------------------------------------
   return res.json(output);
+});
+
+
+router.post('/FINAL/HSMCS001-SETGETSAMELOT', async (req, res) => {
+  //-------------------------------------
+  console.log('--HSMCS001-SETGETSAMELOT--');
+  console.log(req.body);
+  let input = req.body;
+  //-------------------------------------
+  let output = 'NOK';
+  //-------------------------------------
+  //FINAL/REFLOT
+  if (HSMCS001db['TPKLOT'] !== '' && HSMCS001db['PROCESS'] !== '' && HSMCS001db['inspectionItem'] !== '') {
+    let outset = []
+    try {
+
+
+
+      let datalist = await mongodb.findrev(MAIN_DATA, MAIN, { "PROCESS": HSMCS001db['PROCESS'], "TPKLOT": { $regex: `${HSMCS001db['TPKLOT']}`.substring(0, 8) } });
+
+
+      if (datalist.length > 0) {
+        outset = datalist[0]['FINAL']['HS-MCS-001'][`${HSMCS001db['inspectionItem']}`]
+
+        HSMCS001db["value"] = [];
+        HSMCS001db["value"].push({
+          "PIC1": outset["PSC1"][0]['PIC1'],
+          "PIC2": outset["PSC1"][0]['PIC2'],
+          "PIC3": outset["PSC1"][0]['PIC3'],
+          "PIC4": outset["PSC1"][0]['PIC4'],
+          "PIC1data": outset["PSC1"][0]['PIC1data'] || 0,
+          "PIC2data": outset["PSC1"][0]['PIC2data'] || 0,
+          "PIC3data": outset["PSC1"][0]['PIC3data'] || 0,
+          "PIC4data": outset["PSC1"][0]['PIC4data'] || 0,
+        });
+
+        if (HSMCS001db['RESULTFORMAT'] === 'OCR' ||
+          HSMCS001db['RESULTFORMAT'] === 'Picture') {
+          request.post(
+            'http://127.0.0.1:16175/FINAL/FINISHtoDB',
+            { json: HSMCS001db },
+            function (error, response, body) {
+              if (!error && response.statusCode == 200) {
+                // console.log(body);
+                // if (body === 'OK') {
+                HSMCS001db['confirmdata'] = [];
+                HSMCS001db["value"] = [];
+                //------------------------------------------------------------------------------------
+                request.post(
+                  'http://127.0.0.1:16175/FINAL/HSMCS001-feedback',
+                  { json: { "PO": HSMCS001db['PO'], "ITEMs": HSMCS001db['inspectionItem'] } },
+                    async  function (error, response, body2) {
+                    if (!error && response.statusCode == 200) {
+                      // console.log(body2);
+                      // if (body2 === 'OK') {
+                      console.log(HSMCS001db['PO'] );
+                      console.log(datalist[0]['PO']);
+                      let data = await mongodb.update(MAIN_DATA, MAIN, { "PO": HSMCS001db['PO'] }, { "$set": { "ReferFrom": datalist[0]['PO'], } });
+                      output = 'OK';
+                      // }
+                    }
+                  }
+                );
+                //------------------------------------------------------------------------------------
+                // }
+
+              }
+            }
+          );
+
+        }
+
+
+        return res.json({ "return": "OK" });
+
+      }
+
+    } catch (error) {
+      return res.json({ "return": "NOK" });
+    }
+
+  }
+  //-------------------------------------
+  return res.json({ "return": "NOK" });
 });
 
 module.exports = router;

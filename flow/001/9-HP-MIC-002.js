@@ -132,7 +132,7 @@ router.post('/FINAL/GETINtoHPMIC002', async (req, res) => {
   if (input['PO'] !== undefined && input['CP'] !== undefined && check['PO'] === '' && input['USER'] !== undefined && input['USERID'] !== undefined) {
     // let dbsap = await mssql.qurey(`select * FROM [SAPData_GW_GAS].[dbo].[tblSAPDetail] where [PO] = ${input['PO']}`);
 
-    let findPO = await mongodb.findSAP('mongodb://172.23.10.139:12020', "ORDER", "ORDER", {});
+    let findPO = await mongodb.findSAP('mongodb://172.23.10.139:12022', "ORDER", "ORDER", {});
 
     let cuslot = '';
 //&& findPO[0][`DATA`].length > 0
@@ -286,12 +286,14 @@ router.post('/FINAL/GETINtoHPMIC002', async (req, res) => {
           "QUANTITY": dbsap['QUANTITY'] || '',
           // "PROCESS":dbsap ['PROCESS'] || '',
           // "CUSLOTNO": dbsap['CUSLOTNO'] || '',
-          "CUSLOTNO":  cuslot,
+          //CUST_FULLNM
+          //findcp[0]['CUST_FULLNM'] || '',
+          "CUSLOTNO": cuslot,
           "FG_CHARG": dbsap['FG_CHARG'] || '',
           "PARTNAME_PO": dbsap['PARTNAME_PO'] || '',
           "PART_PO": dbsap['PART_PO'] || '',
-          "CUSTNAME_s": dbsap['CUSTNAME'] || '',
-          "CUSTNAME": dbsap['CUST_FULLNM']|| '',
+          "CUSTNAME_s": dbsap['CUST_FULLNM'] || '',
+          "CUSTNAME": findcp[0]['CUST_FULLNM'] || '',
           "UNITSAP": dbsap['UNIT'] || '',
           //----------------------
           "ItemPick": ItemPickoutP2, //---->
